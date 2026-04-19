@@ -1,0 +1,6 @@
+{
+  "name": "PythonLab",
+  "description": "Un laboratoire interactif pour apprendre Python avec des tutoriels, des livres, des exemples de code et un interpréteur Python intégré.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
