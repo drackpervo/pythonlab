@@ -5,23 +5,44 @@ export const TUTORIALS: Tutorial[] = [
     id: 'intro-python',
     title: 'Introduction à Python',
     level: 'Débutant',
-    description: 'Les bases de Python : variables, types et opérations simples. Idéal pour ceux qui débutent totalement.',
+    description: 'Les bases fondamentales : variables, typage dynamique, opérations arithmétiques et entrées utilisateur.',
     content: `
-# Bienvenue dans PythonLab !
+# Bienvenue dans l'univers Python !
 
-Python est un langage de programmation puissant et facile à apprendre. 
+Python est un langage de programmation **polyvalent**, **lisible** et **puissant**. Il est utilisé aussi bien pour le web que pour l'intelligence artificielle.
 
-### Variables et Types
-En Python, vous declarez une variable en lui assignant simplement une valeur.
+### 1. Variables et Typage Dynamique
+En Python, vous n'avez pas besoin de déclarer le type d'une variable. Python le devine pour vous !
 
 \`\`\`python
+# Une chaîne de caractères (str)
 nom = "Pythoniste"
-age = 25
-est_interessant = True
+
+# Un nombre entier (int)
+score = 100
+
+# Un nombre à virgule (float)
+prix = 19.99
+
+# Un booléen (bool)
+est_pret = True
 \`\`\`
 
-### Affichage
-Utilisez la fonction \`print()\` pour afficher du texte.
+### 2. Opérations de base
+Vous pouvez manipuler les nombres très simplement :
+*   \`+\`, \`-\`, \`*\`, \`/\` : Opérations classiques.
+*   \`//\` : Division entière (ignore les virgules).
+*   \`**\` : Puissance (ex: \`2**3\` vaut 8).
+*   \`%\` : Modulo (le reste de la division).
+
+### 3. Interaction avec l'utilisateur
+La fonction \`input()\` permet de poser une question à l'utilisateur :
+\`\`\`python
+reponse = input("Comment t'appelles-tu ? ")
+print(f"Heureux de te voir, {reponse} !")
+\`\`\`
+
+> **Conseil de progression :** Essayez toujours de donner des noms de variables explicites (ex: \`prix_total\` au lieu de \`pt\`) pour rendre votre code lisible par les autres !
 `,
     codeExample: 'nom = "Pythoniste"\nprint(f"Bonjour {nom}!")'
   },
@@ -29,22 +50,45 @@ Utilisez la fonction \`print()\` pour afficher du texte.
     id: 'conditions',
     title: 'Conditions et Logique',
     level: 'Débutant',
-    description: 'Apprenez à prendre des décisions dans votre code avec if, elif et else. Comprenez la logique booléenne.',
+    description: 'Maîtrisez la prise de décision avec if/else, les opérateurs de comparaison et la logique booléenne.',
     content: `
-# Les Conditions
+# La Logique Conditionnelle
 
-Les blocs conditionnels permettent d'exécuter du code seulement si une condition est remplie.
+Les programmes ne sont pas linéaires ; ils doivent prendre des décisions basées sur des données.
+
+### 1. La structure If / Elif / Else
+Le mot-clé \`elif\` est une contraction de "else if". Il permet de tester plusieurs conditions à la suite.
 
 \`\`\`python
-score = 85
+age = 18
 
-if score >= 90:
-    print("Excellent !")
-elif score >= 70:
-    print("Bien joué !")
+if age < 13:
+    print("Enfant")
+elif age < 18:
+    print("Adolescent")
 else:
-    print("Continuez à pratiquer !")
+    print("Adulte")
 \`\`\`
+
+### 2. Opérateurs de Comparaison
+*   \`==\` : Égalité (attention, ne pas confondre avec \`=\` qui est l'assignation).
+*   \`!=\` : Différent de.
+*   \`>\` , \`<\` , \`>=\` , \`<=\` : Supériorité et infériorité.
+
+### 3. Logique Booléenne (and, or, not)
+Vous pouvez combiner des conditions :
+*   \`and\` : Vrai si **toutes** les conditions sont vraies.
+*   \`or\` : Vrai si **au moins une** condition est vraie.
+*   \`not\` : Inverse le résultat (Vrai devient Faux).
+
+\`\`\`python
+a = 10
+b = 20
+if a > 5 and b < 30:
+    print("Les deux sont corrects !")
+\`\`\`
+
+> **Conseil de progression :** Utilisez des parenthèses dans les expressions complexes pour être certain de l'ordre d'évaluation !
 `,
     codeExample: 'score = 85\nif score > 50:\n    print("Passé !")'
   },
@@ -52,28 +96,52 @@ else:
     id: 'loops',
     title: 'Boucles et Itérations',
     level: 'Débutant',
-    description: 'Répétez des actions efficacement avec for et while. Parcourez des listes et des gammes de nombres.',
+    description: 'Automatisez les tâches répétitives avec For, While, et apprenez à manipuler les fonctions range() et enumerate().',
     content: `
-# Les Boucles
+# Les Boucles : Automatisez tout !
 
-### La boucle for
-Idéale pour parcourir une liste ou une séquence.
+En programmation, on ne répète jamais manuellement une action. On utilise des boucles.
 
-\`\`\`python
-fruits = ["pomme", "banane", "cerise"]
-for fruit in fruits:
-    print(fruit)
-\`\`\`
-
-### La boucle while
-Répète tant qu'une condition reste vraie.
+### 1. La boucle For
+Elle est utilisée pour itérer sur une **séquence** (liste, chaîne de caractères, ou plage de nombres).
 
 \`\`\`python
-compteur = 0
-while compteur < 5:
-    print(compteur)
-    compteur += 1
+# Utilisation de range(debut, fin, pas)
+for i in range(1, 10, 2):
+    print(i) # Affichera 1, 3, 5, 7, 9
 \`\`\`
+
+### 2. La boucle While
+Elle continue tant qu'une condition est **vraie**. Attention à ne pas créer de boucle infinie !
+
+\`\`\`python
+energie = 3
+while energie > 0:
+    print("Je travaille...")
+    energie -= 1
+print("Repos obligatoire.")
+\`\`\`
+
+### 3. Contrôler les boucles
+*   \`break\` : Arrête immédiatement la boucle.
+*   \`continue\` : Saute l'itération actuelle et passe à la suivante.
+
+\`\`\`python
+for i in range(10):
+    if i == 5:
+        break # Stoppe tout à 5
+    print(i)
+\`\`\`
+
+### 4. L'utilitaire enumerate()
+Idéal pour obtenir à la fois l'index et la valeur d'une liste :
+\`\`\`python
+elements = ['Python', 'JS', 'Java']
+for index, nom in enumerate(elements):
+    print(f"N°{index} : {nom}")
+\`\`\`
+
+> **Conseil de progression :** Privilégiez la boucle \`for\` quand vous connaissez le nombre d'itérations à l'avance, et \`while\` quand vous attendez un événement particulier.
 `,
     codeExample: 'for i in range(5):\n    print(f"Index: {i}")'
   },
@@ -81,25 +149,53 @@ while compteur < 5:
     id: 'functions-adv',
     title: 'Fonctions et Modules',
     level: 'Intermédiaire',
-    description: 'Arguments nommés, lambda expressions et importation de modules externes.',
+    description: 'Devenez plus flexible avec les arguments nommés (*args, **kwargs), les valeurs par défaut et les fonctions anonymes.',
     content: `
-# Fonctions et Modules
+# Fonctions : Au-delà des bases
 
-### Modules
-Utilisez \`import\` pour accéder à des bibliothèques externes.
+Les fonctions sont les briques de votre code. En Python, elles sont extrêmement flexibles.
+
+### 1. Arguments par défaut
+Vous pouvez définir une valeur par défaut si l'utilisateur ne fournit pas l'argument.
 
 \`\`\`python
-import math
-print(math.sqrt(16))
+def saluer(nom, message="Bonjour"):
+    print(f"{message}, {nom} !")
+
+saluer("Alice") # Affiche : Bonjour, Alice !
+saluer("Bob", "Salut") # Affiche : Salut, Bob !
 \`\`\`
 
-### Lambda
-Des fonctions anonymes sur une seule ligne.
+### 2. Arguments variables (*args et **kwargs)
+*   \`*args\` : Permet de recevoir un nombre illimité d'arguments positionnels (sous forme de tuple).
+*   \`**kwargs\` : Permet de recevoir un nombre illimité d'arguments nommés (sous forme de dictionnaire).
+
+\`\`\`python
+def additionner(*nombres):
+    return sum(nombres)
+
+print(additionner(1, 2, 3, 4, 5)) # Affiche 15
+\`\`\`
+
+### 3. Lambda : La fonction d'une ligne
+Utile pour les opérations rapides, souvent utilisées avec \`map()\` ou \`filter()\`.
 
 \`\`\`python
 carre = lambda x: x**2
-print(carre(5))
+print(carre(5)) # Affiche 25
 \`\`\`
+
+### 4. Docstrings
+Documentez toujours vos fonctions pour que les autres (et vous-même) comprennent leur rôle.
+
+\`\`\`python
+def factorielle(n):
+    """Calcule la factorielle d'un nombre n de manière récursive."""
+    if n == 0: return 1
+    return n * factorielle(n-1)
+\`\`\`
+
+> **Conseil de progression :** Essayez de garder vos fonctions courtes (une fonction = une action précise).
 `,
     codeExample: 'import random\nprint(random.randint(1, 100))'
   },
@@ -107,26 +203,251 @@ print(carre(5))
     id: 'classes',
     title: 'Classes et POO',
     level: 'Avancé',
-    description: 'Programmation Orientée Objet : encapsulation, héritage et polymorphisme.',
+    description: 'Maîtrisez la Programmation Orientée Objet (POO) : classes, méthodes dunder, héritage et encapsulation.',
     content: `
-# Programmation Orientée Objet
+# Programmation Orientée Objet (POO)
 
-Créez vos propres modèles de données complexes.
+La POO permet d'organiser votre code en "objets" qui imitent le monde réel.
+
+### 1. La Classe et l'Instance
+Une **classe** est un plan (moule), une **instance** est l'objet créé à partir de ce plan.
 
 \`\`\`python
-class Vehicule:
-    def __init__(self, marque):
-        self.marque = marque
+class Robot:
+    def __init__(self, nom):
+        self.nom = nom # Attribut d'instance
 
-class Voiture(Vehicule):
-    def demarrer(self):
-        print(f"La {self.marque} démarre...")
+    def dire_bonjour(self):
+        print(f"Bip-boup, je suis {self.nom}")
 
-ma_voiture = Voiture("Tesla")
-ma_voiture.demarrer()
+r2d2 = Robot("R2-D2")
+r2d2.dire_bonjour()
 \`\`\`
+
+### 2. L'Héritage
+Vous pouvez créer une classe qui hérite des capacités d'une autre classe.
+
+\`\`\`python
+class Animal:
+    def manger(self):
+        print("Miam miam...")
+
+class Chat(Animal): # Chat hérite de Animal
+    def miauler(self):
+        print("Miaou !")
+
+mon_chat = Chat()
+mon_chat.manger() # Méthode héritée
+mon_chat.miauler() # Méthode propre
+\`\`\`
+
+### 3. Méthodes Dunder (Magiques)
+Ce sont des méthodes qui commencent et finissent par \`__\`. Elles permettent de définir des comportements spéciaux.
+*   \`__init__\` : Initialisation de l'objet.
+*   \`__str__\` : Définit ce qui s'affiche avec \`print()\`.
+
+### 4. Encapsulation (Privé vs Public)
+En Python, on utilise un souligné \`_\` devant un attribut pour indiquer qu'il est "privé" par convention.
+
+> **Conseil de progression :** La POO est puissante pour les gros projets. Pour les petits scripts, restez simple avec des fonctions !
 `,
     codeExample: 'class Point:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\np = Point(10, 20)\nprint(f"X: {p.x}")'
+  },
+  {
+    id: 'data-structures',
+    title: 'Structures de Données',
+    level: 'Intermédiaire',
+    description: 'Explorez en profondeur les Listes, Tuples, Dictionnaires et Sets pour stocker vos données.',
+    content: `
+# Manipuler les Données
+
+Stocker une information simple est facile, mais gérer des collections de données demande de choisir le bon outil.
+
+### 1. Les Listes (\`list\`) : Ordonnées et Modifiables
+C'est le couteau-suisse de Python.
+\`\`\`python
+nombres = [1, 2, 3]
+nombres.append(4) # Ajout
+print(nombres[0]) # Accès via index
+\`\`\`
+
+### 2. Les Tuples (\`tuple\`) : Immobiles
+Comme une liste, mais **on ne peut pas les modifier** après création. Ils sont plus rapides.
+\`\`\`python
+coordonnees = (48.8566, 2.3522)
+\`\`\`
+
+### 3. Les Dictionnaires (\`dict\`) : Clé-Valeur
+Le moyen le plus rapide de retrouver une donnée précise sans parcourir tout le tableau.
+\`\`\`python
+user = {"nom": "Alice", "age": 30}
+print(user["nom"])
+\`\`\`
+
+### 4. Les Sets (\`set\`) : Unicité totale
+Une collection d'éléments **uniques** et sans ordre précis.
+\`\`\`python
+doublons = {1, 2, 2, 3, 3}
+print(doublons) # Affichera {1, 2, 3}
+\`\`\`
+
+> **Conseil de progression :** Utilisez un dictionnaire dès que vous devez associer deux informations ensemble !
+`,
+    codeExample: 'scores = {"Alice": 10, "Bob": 15}\nprint(scores["Bob"])'
+  },
+  {
+    id: 'error-handling',
+    title: 'Gestion des Erreurs',
+    level: 'Intermédiaire',
+    description: 'Apprenez à rendre votre code robuste face aux imprévus avec try/except.',
+    content: `
+# Gérer les exceptions
+
+Un bon développeur ne prévoit pas seulement que tout marche, il prévoit aussi ce qui pourrait rater.
+
+### 1. Le bloc Try / Except
+Empêche votre programme de s'arrêter brutalement en cas d'erreur.
+
+\`\`\`python
+try:
+    nombre = int(input("Donnez un chiffre : "))
+    resultat = 10 / nombre
+except ZeroDivisionError:
+    print("Oups, on ne peut pas diviser par zéro !")
+except ValueError:
+    print("Veuillez entrer un nombre valide.")
+else:
+    print(f"Réussite ! Résultat : {resultat}")
+finally:
+    print("Nettoyage des ressources terminé.")
+\`\`\`
+
+### 2. Lever ses propres erreurs
+Vous pouvez forcer une erreur si une condition de votre logique n'est pas remplie.
+
+\`\`\`python
+def verifier_age(age):
+    if age < 0:
+        raise ValueError("L'âge ne peut pas être négatif")
+\`\`\`
+
+> **Conseil de progression :** Ne faites pas de try/except trop large. Ciblez précisément le code qui peut échouer.
+`,
+    codeExample: 'try:\n    x = 1 / 0\nexcept:\n    print("Erreur !")'
+  },
+  {
+    id: 'file-handling',
+    title: 'Gestion des Fichiers',
+    level: 'Avancé',
+    description: 'Apprenez à lire, écrire et organiser des fichiers sur votre disque dur.',
+    content: `
+# Lire et Écrire des fichiers
+
+Interagir avec le système de fichiers est crucial pour la plupart des applications.
+
+### 1. Ouverture avec "with"
+C'est la méthode de référence car elle ferme le fichier automatiquement, même en cas d'erreur.
+
+\`\`\`python
+# Écriture
+with open("note.txt", "w", encoding="utf-8") as f:
+    f.write("Apprendre Python est passionnant !")
+
+# Lecture
+with open("note.txt", "r") as f:
+    contenu = f.read()
+    print(contenu)
+\`\`\`
+
+### 2. Modes d'ouverture
+*   \`"r"\` : Lecture seule.
+*   \`"w"\` : Écriture (écrase le contenu existant).
+*   \`"a"\` : Ajout (ajoute à la fin du fichier).
+
+### 3. Travailler avec JSON
+Pour stocker des données complexes de manière structurée.
+
+\`\`\`python
+import json
+data = {"score": 100, "pseudo": "DarkPython"}
+json_str = json.dumps(data)
+\`\`\`
+
+> **Conseil de progression :** Utilisez toujours l'encodage 'utf-8' lors de l'ouverture de fichiers texte pour éviter les bugs d'accents !
+`,
+    codeExample: 'with open("test.txt", "w") as f:\n    f.write("Hello World")'
+  },
+  {
+    id: 'best-practices',
+    title: 'Bonnes Pratiques (PEP 8)',
+    level: 'Débutant',
+    description: 'Apprenez à écrire du code propre, lisible et conforme aux standards de la communauté Python.',
+    content: `
+# Écrire du code "Pythonique"
+
+Python a été conçu pour être lu par des humains. Le document **PEP 8** définit les règles de style suivies par tous les développeurs pro.
+
+### 1. Le Nommage
+*   **Variables et Fonctions :** Utilisez le \`snake_case\` (ex: \`mon_score_final\`).
+*   **Classes :** Utilisez le \`PascalCase\` (ex: \`UtilisateurAdmin\`).
+*   **Constantes :** Utilisez le \`UPPER_SNAKE_CASE\` (ex: \`PI_VALEUR\`).
+
+### 2. L'Espacement
+*   Utilisez **4 espaces** par niveau d'indentation (évitez les tabulations).
+*   Laissez deux lignes vides entre vos fonctions globales.
+*   Laissez une ligne vide entre les méthodes d'une classe.
+
+### 3. La Lisibilité (Zen de Python)
+Tapez \`import this\` dans une console Python pour lire les principes du langage. Retenez surtout :
+*   "La lisibilité compte."
+*   "Le plat est préférable à l'imbriqué."
+*   "Si l'implémentation est difficile à expliquer, c'est une mauvaise idée."
+
+> **Conseil de progression :** Utilisez un outil comme \`Flake8\` ou \`Black\` pour formater votre code automatiquement !
+`,
+    codeExample: '# Mauvais :\ndef fonc(x,y):return x+y\n\n# Bon :\ndef additionner(nombre_a, nombre_b):\n    return nombre_a + nombre_b'
+  },
+  {
+    id: 'venv-pip',
+    title: 'Environnements et PIP',
+    level: 'Intermédiaire',
+    description: 'Gérez vos dépendances et isolez vos projets avec les environnements virtuels.',
+    content: `
+# Gérer ses projets comme un Pro
+
+Dans le monde réel, chaque projet Python peut avoir besoin de versions différentes de bibliothèques.
+
+### 1. PIP : L'installateur de paquets
+Permet d'ajouter des bibliothèques externes depuis le dépôt officiel (PyPI).
+\`\`\`bash
+pip install requests  # Pour faire des appels web
+pip install pandas    # Pour la science des données
+\`\`\`
+
+### 2. Environnements Vitual (venv)
+Imaginez un bac à sable isolé pour votre projet.
+\`\`\`bash
+# Création
+python -m venv mon_env
+
+# Activation (Windows)
+mon_env\\Scripts\\activate
+
+# Activation (Mac/Linux)
+source mon_env/bin/activate
+\`\`\`
+
+### 3. Fichier requirements.txt
+Pour partager votre projet, listez toutes vos dépendances dans ce fichier.
+\`\`\`bash
+pip freeze > requirements.txt
+# Puis pour un autre développeur :
+pip install -r requirements.txt
+\`\`\`
+
+> **Conseil de progression :** Prenez l'habitude de créer un environnement virtuel dès que vous commencez un nouveau projet !
+`,
+    codeExample: 'pip install requests\nimport requests\nr = requests.get("https://google.com")'
   }
 ];
 
@@ -769,7 +1090,12 @@ export const QUIZZES: Quiz[] = [
       { id: 'q13', text: 'Quelle propriété permet d\'accéder à la fonction originale via @functools.wraps ?', options: ['__original__', '__wrapped__', '__func__', '__base__'], correctAnswer: 1, explanation: 'wraps ajoute l\'attribut __wrapped__ pointant vers la fonction d\'origine.' },
       { id: 'q14', text: 'Un décorateur peut-il être implémenté via une classe ?', options: ['Oui, via la méthode __call__', 'Non, seulement via des fonctions', 'Seulement via métaclasses', 'Uniquement en Python 3.12+'], correctAnswer: 0, explanation: 'L\'instance de classe devient alors l\'objet appelable remplaçant la fonction.' },
       { id: 'q15', text: 'Que devient f() si son décorateur oublie l\'instruction "return wrapper" ?', options: ['Elle garde son comportement', 'Elle devient None', 'Elle boucle à l\'infini', 'Elle s\'auto-détruit'], correctAnswer: 1, explanation: 'Python renvoie None par défaut si un return manque, remplaçant ainsi f.' },
-      { id: 'q16', text: 'Peut-on utiliser un décorateur uniquement pour "enregistrer" une fonction sans la modifier ?', options: ['Oui', 'Non', 'Seulement pour les API', 'Seulement via import'], correctAnswer: 0, explanation: 'Le décorateur peut simplement ajouter la fonction à une liste de plugins et renvoyer la fonction originale intacte.' }
+      { id: 'q16', text: 'Peut-on utiliser un décorateur uniquement pour "enregistrer" une fonction sans la modifier ?', options: ['Oui', 'Non', 'Seulement pour les API', 'Seulement via import'], correctAnswer: 0, explanation: 'Le décorateur peut simplement ajouter la fonction à une liste de plugins et renvoyer la fonction originale intacte.' },
+      { id: 'q17', text: 'Comment définir une méthode de suppression pour une @property nommée "age" ?', options: ['@age.delete', '@age.deleter', '@delete.age', '@property.deleter(age)'], correctAnswer: 1, explanation: 'La syntaxe est @nom_methode.deleter.' },
+      { id: 'q18', text: 'Si j\'appelle une @classmethod depuis une instance, quel argument est passé à "cls" ?', options: ['L\'instance elle-même', 'La classe de l\'instance', 'None', 'Une erreur est levée'], correctAnswer: 1, explanation: 'Python trouve automatiquement la classe, même si l\'appel vient d\'une instance.' },
+      { id: 'q19', text: 'Quelle est la principale différence d\'accès entre une méthode normale et une @property ?', options: ['Une property s\'appelle avec .p()', 'Une property s\'accède sans parenthèses .p', 'Une property est plus lente', 'Une property est privée'], correctAnswer: 1, explanation: 'Elle simule un attribut, donc les parenthèses d\'appel sont inutiles.' },
+      { id: 'q20', text: 'Une @staticmethod peut-elle accéder aux attributs de classe via "self" ?', options: ['Non, elle ne reçoit pas self', 'Oui, toujours', 'Seulement en Python 2', 'Seulement si elle est publique'], correctAnswer: 0, explanation: 'Contrairement aux méthodes d\'instance, statique ne reçoit ni self ni cls.' },
+      { id: 'q21', text: 'Quel décorateur permet de créer des propriétés dont la valeur est calculée une seule fois (mise en cache) ?', options: ['@property.memoize', '@functools.cached_property', '@static.property', '@lazy_property'], correctAnswer: 1, explanation: 'Inclus dans functools, il transforme une méthode en propriété dont le résultat est stocké après le premier calcul.' }
     ]
   },
   {
