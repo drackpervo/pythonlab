@@ -11,17 +11,6 @@ export function SupportForm() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (submitted) {
-      const timer = setTimeout(() => {
-        setSubmitted(false);
-        setName('');
-        setMessage('');
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [submitted]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
@@ -29,44 +18,56 @@ export function SupportForm() {
     setIsSubmitting(true);
     setError(null);
     
-  try {
-    const response = await fetch('/api/send-email', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ name, message }),
-    });
-
-    let data;
-    const contentType = response.headers.get("content-type");
-    if (contentType && contentType.indexOf("application/json") !== -1) {
-      data = await response.json();
-    } else {
-      const text = await response.text();
-      console.error("Non-JSON response:", text);
-      throw new Error("Le serveur a renvoyé une réponse invalide (HTML). Vérifiez votre configuration Vercel ou les secrets.");
-    }
-
-    if (!response.ok) {
-      throw new Error(data?.error || "Erreur lors de l'envoi");
-    }
-    
-    setSubmitted(true);
-    if (typeof confetti === 'function') {
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#10b981', '#ffffff', '#34d399']
+    try {
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, message }),
       });
-    }
-  } catch (err) {
+
+      let data;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        console.error("Non-JSON response:", text);
+        throw new Error("Réponse invalide du serveur.");
+      }
+
+      if (!response.ok) {
+        throw new Error(data?.error || "Erreur lors de l'envoi");
+      }
+      
+      setSubmitted(true);
+      // Confetti is fun but let's make it optional and safe
+      try {
+        if (typeof confetti === 'function') {
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#10b981', '#ffffff', '#34d399']
+          });
+        }
+      } catch (cErr) {
+        console.warn("Confetti failed to fire", cErr);
+      }
+    } catch (err) {
       console.error("Submission Error:", err);
       setError(err instanceof Error ? err.message : "Une erreur est survenue lors de l'envoi.");
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleReset = () => {
+    setSubmitted(false);
+    setName('');
+    setMessage('');
+    setError(null);
   };
 
   return (
@@ -190,7 +191,7 @@ export function SupportForm() {
                   Votre message a été transmis à l'équipe. Ce genre de retour nous pousse à aller encore plus loin !
                 </p>
                 <button
-                  onClick={() => setSubmitted(false)}
+                  onClick={handleReset}
                   className="text-white/50 hover:text-white text-[10px] font-mono font-bold uppercase tracking-widest transition-colors flex items-center gap-2 mx-auto"
                 >
                   <MessageSquare size={14} /> Envoyer un autre mot
