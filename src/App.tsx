@@ -12,19 +12,21 @@ import {
   ExternalLink,
   ClipboardCheck,
   Award,
-  Play
+  Play,
+  BrainCircuit
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import confetti from 'canvas-confetti';
 
-import { TUTORIALS, BOOKS, QUIZZES } from './constants';
-import { Tutorial, Book, Quiz } from './types';
+import { TUTORIALS, BOOKS, QUIZZES, PLAYGROUND_EXAMPLES } from './constants';
+import { Tutorial, Book, Quiz, PlaygroundExample } from './types';
 import { QuizComponent } from './components/QuizComponent';
+import { CodeLab } from './components/CodeLab';
 import { cn } from './lib/utils';
 
-type View = 'dashboard' | 'tutorials' | 'books' | 'quizzes';
+type View = 'dashboard' | 'tutorials' | 'books' | 'quizzes' | 'codelab';
 
 export default function App() {
   const [activeView, setActiveView] = useState<View>('dashboard');
@@ -100,6 +102,13 @@ export default function App() {
             onClick={() => { setActiveView('quizzes'); setSelectedQuiz(null); if (window.innerWidth < 768) setIsSidebarOpen(false); }} 
             icon={<Award size={20} />} 
             label="Quiz Lab" 
+            collapsed={!isSidebarOpen}
+          />
+          <NavItem 
+            active={activeView === 'codelab'} 
+            onClick={() => { setActiveView('codelab'); if (window.innerWidth < 768) setIsSidebarOpen(false); }} 
+            icon={<BrainCircuit size={20} />} 
+            label="Lab d'Exemples" 
             collapsed={!isSidebarOpen}
           />
           <NavItem 
@@ -370,6 +379,16 @@ export default function App() {
                      </div>
                   </div>
                 )}
+              </motion.div>
+            )}
+
+            {activeView === 'codelab' && (
+              <motion.div 
+                key="codelab"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                <CodeLab />
               </motion.div>
             )}
 

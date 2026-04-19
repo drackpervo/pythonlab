@@ -34,3 +34,10 @@ export interface Quiz {
   description: string;
   questions: Question[];
 }
+
+export interface PlaygroundExample {
+  id: string;
+  title: string;
+  description: string;
+  code: string;
+}

@@ -23,6 +23,10 @@
   .custom-scrollbar::-webkit-scrollbar-thumb {
     @apply bg-gray-800 rounded-full hover:bg-emerald-500/20 transition-colors;
   }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* Base tailwind imports if needed separately for version 4 */

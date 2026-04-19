@@ -1,4 +1,4 @@
-import { Tutorial, Book, Quiz, Question } from './types';
+import { Tutorial, Book, Quiz, Question, PlaygroundExample } from './types';
 
 export const TUTORIALS: Tutorial[] = [
   {
@@ -1209,5 +1209,80 @@ export const QUIZZES: Quiz[] = [
       { id: 'q5', text: 'Lequel est un "Weak Reference" ?', options: ['Une référence qui n\'empêche pas la suppression par le GC', 'Une référence brisée', 'Une variable locale', 'Un alias'], correctAnswer: 0, explanation: 'Utile pour les caches sans créer de fuites mémoires.' },
       { id: 'q6', text: 'Quel module permet de voir le nombre de références d\'un objet ?', options: ['sys.getrefcount()', 'gc.count()', 'id()', 'memoryview()'], correctAnswer: 0, explanation: 'Attention, l\'appel lui-même rajoute une référence temporaire.' }
     ]
+  }
+];
+
+export const PLAYGROUND_EXAMPLES: PlaygroundExample[] = [
+  {
+    id: 'hello-world',
+    title: 'Hello Python',
+    description: 'Le point de départ classique pour tout développeur.',
+    code: 'print("Bonjour depuis PythonLab !")\nname = "Apprenant"\nprint(f"Prêt pour coder, {name} ?")'
+  },
+  {
+    id: 'fibonacci',
+    title: 'Suite de Fibonacci',
+    description: 'Générer une suite de nombres où chaque nombre est la somme des deux précédents.',
+    code: 'def fibonacci(n):\n    a, b = 0, 1\n    result = []\n    for _ in range(n):\n        result.append(a)\n        a, b = b, a + b\n    return result\n\nprint(fibonacci(10))'
+  },
+  {
+    id: 'list-comp',
+    title: 'Compréhension de Listes',
+    description: 'Une manière élégante et concise de créer des listes en Python.',
+    code: '# Créer une liste de carrés des nombres pairs\nsquares = [x**2 for x in range(10) if x % 2 == 0]\nprint(f"Carrés des pairs : {squares}")'
+  },
+  {
+    id: 'decorators-demo',
+    title: 'Démo Décorateur',
+    description: 'Voyez comment un décorateur peut ajouter du comportement à une fonction.',
+    code: 'def debug(func):\n    def wrapper(*args, **kwargs):\n        print(f"Appel de {func.__name__} avec {args}")\n        return func(*args, **kwargs)\n    return wrapper\n\n@debug\ndef addition(a, b):\n    return a + b\n\nprint(f"Résultat : {addition(5, 7)}")'
+  },
+  {
+    id: 'context-mgr',
+    title: 'Gestionnaire de Contexte',
+    description: 'Créez vos propres context managers avec __enter__ et __exit__.',
+    code: 'class TempFileSimulation:\n    def __enter__(self):\n        print("Ouverture de la ressource...")\n        return self\n    \n    def __exit__(self, exc_type, exc_val, exc_tb):\n        print("Fermeture automatique sécurisée.")\n\nwith TempFileSimulation():\n    print("Traitement en cours dans le bloc...")'
+  },
+  {
+    id: 'generators',
+    title: 'Générateurs',
+    description: 'Produisez des valeurs de manière paresseuse (lazy) pour économiser la mémoire.',
+    code: 'def compte_a_rebours(n):\n    while n > 0:\n        yield n\n        n -= 1\n\nfor nombre in compte_a_rebours(5):\n    print(nombre)\nprint("Lancement !")'
+  },
+  {
+    id: 'lambda-map',
+    title: 'Lambda & Map',
+    description: 'Utilisation de fonctions anonymes pour transformer des données.',
+    code: 'prix_ht = [10, 25, 40, 100]\nprix_ttc = list(map(lambda x: x * 1.2, prix_ht))\nprint(f"HT : {prix_ht}")\nprint(f"TTC (TVA 20%) : {prix_ttc}")'
+  },
+  {
+    id: 'args-kwargs-demo',
+    title: 'Args & Kwargs',
+    description: 'Gérez un nombre variable d\'arguments dans vos fonctions.',
+    code: 'def demo_arguments(*args, **kwargs):\n    for i, arg in enumerate(args):\n        print(f"Positionnel {i}: {arg}")\n    for k, v in kwargs.items():\n        print(f"Nommé {k}: {v}")\n\ndemo_arguments("A", "B", ville="Paris", score=100)'
+  },
+  {
+    id: 'set-ops',
+    title: 'Opérations sur Sets',
+    description: 'Manipulation efficace d\'ensembles uniques.',
+    code: 'amateurs_python = {"Alice", "Bob", "Charlie"}\namateurs_js = {"Bob", "David", "Charlie"}\n\ncommuns = amateurs_python & amateurs_js\ntous = amateurs_python | amateurs_js\nprint(f"Fans des deux : {communs}")\nprint(f"Total fans uniques : {tous}")'
+  },
+  {
+    id: 'decorators-adv',
+    title: 'Décorateurs avec Arguments',
+    description: 'Créez des décorateurs qui acceptent des paramètres de configuration.',
+    code: 'def repete(n):\n    def decorateur(func):\n        def wrapper(*args, **kwargs):\n            for _ in range(n):\n                result = func(*args, **kwargs)\n            return result\n        return wrapper\n    return decorateur\n\n@repete(3)\ndef salue(nom):\n    print(f"Salut {nom} !")\n\nsalue("Python")'
+  },
+  {
+    id: 'abstract-base-classes',
+    title: 'Classes Abstraites',
+    description: 'Définissez des interfaces strictes avec le module abc.',
+    code: 'from abc import ABC, abstractmethod\n\nclass Forme(ABC):\n    @abstractmethod\n    def aire(self):\n        pass\n\nclass Carre(Forme):\n    def __init__(self, cote):\n        self.cote = cote\n    def aire(self):\n        return self.cote ** 2\n\nc = Carre(5)\nprint(f"Aire du carré : {c.aire()}")'
+  },
+  {
+    id: 'itertools-demo',
+    title: 'Module Itertools',
+    description: 'Outils puissants pour manipuler les itérateurs.',
+    code: 'from itertools import cycle, islice\n\ncouleurs = cycle(["Rouge", "Vert", "Bleu"])\npremier_six = list(islice(couleurs, 6))\nprint(f"Cycle infini limité à 6 : {premier_six}")'
   }
 ];
