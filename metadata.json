@@ -1,6 +1,6 @@
 {
   "name": "PythonLab",
-  "description": "Un laboratoire interactif pour apprendre Python avec des tutoriels, des livres, des exemples de code et un interpréteur Python intégré.",
+  "description": "Un laboratoire interactif pour apprendre Python avec des tutoriels, des livres, des analyses de code par IA (Gemini) et un espace de soutien communautaire.",
   "requestFramePermissions": [],
   "majorCapabilities": []
 }

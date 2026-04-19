@@ -13,7 +13,11 @@ import {
   ClipboardCheck,
   Award,
   Play,
-  BrainCircuit
+  BrainCircuit,
+  Heart,
+  Code2,
+  ArrowUpDown,
+  Filter
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
@@ -24,9 +28,10 @@ import { TUTORIALS, BOOKS, QUIZZES, PLAYGROUND_EXAMPLES } from './constants';
 import { Tutorial, Book, Quiz, PlaygroundExample } from './types';
 import { QuizComponent } from './components/QuizComponent';
 import { CodeLab } from './components/CodeLab';
+import { SupportForm } from './components/SupportForm';
 import { cn } from './lib/utils';
 
-type View = 'dashboard' | 'tutorials' | 'books' | 'quizzes' | 'codelab';
+type View = 'dashboard' | 'tutorials' | 'books' | 'quizzes' | 'codelab' | 'support';
 
 export default function App() {
   const [activeView, setActiveView] = useState<View>('dashboard');
@@ -34,6 +39,8 @@ export default function App() {
   const [selectedQuiz, setSelectedQuiz] = useState<Quiz | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [tutorialFilter, setTutorialFilter] = useState<'Tous' | 'Débutant' | 'Intermédiaire' | 'Avancé'>('Tous');
+  const [quizSort, setQuizSort] = useState<'default' | 'title' | 'level'>('default');
+  const [quizFilter, setQuizFilter] = useState<'Tous' | 'Débutant' | 'Intermédiaire' | 'Avancé'>('Tous');
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleTutorialComplete = () => {
@@ -53,10 +60,17 @@ export default function App() {
     t.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredQuizzes = QUIZZES.filter(q => 
+  const filteredQuizzes = (quizFilter === 'Tous' 
+    ? QUIZZES 
+    : QUIZZES.filter(q => q.level === quizFilter)
+  ).filter(q => 
     q.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
     q.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  ).sort((a, b) => {
+    if (quizSort === 'title') return a.title.localeCompare(b.title);
+    if (quizSort === 'level') return a.level.localeCompare(b.level);
+    return 0;
+  });
 
   return (
     <div className="flex h-screen bg-[#0A0B0D] text-gray-200 overflow-hidden font-sans">
@@ -69,10 +83,10 @@ export default function App() {
       >
         <div className="p-6 md:p-6 flex items-center justify-between">
           <div className={cn("flex items-center gap-3", !isSidebarOpen && "md:hidden")}>
-            <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
-              <TerminalIcon className="text-black w-5 h-5" />
+            <div className="w-10 h-10 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20 rotate-3 group-hover:rotate-0 transition-transform">
+              <Code2 className="text-black w-6 h-6" />
             </div>
-            <span className="font-bold text-xl tracking-tighter text-white">PythonLab</span>
+            <span className="font-black text-2xl tracking-tighter text-white">Python<span className="text-emerald-500">Lab</span></span>
           </div>
           <button 
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -116,6 +130,13 @@ export default function App() {
             onClick={() => { setActiveView('books'); if (window.innerWidth < 768) setIsSidebarOpen(false); }} 
             icon={<Library size={20} />} 
             label="Bibliothèque" 
+            collapsed={!isSidebarOpen}
+          />
+          <NavItem 
+            active={activeView === 'support'} 
+            onClick={() => { setActiveView('support'); if (window.innerWidth < 768) setIsSidebarOpen(false); }} 
+            icon={<Heart size={20} />} 
+            label="Soutenir le Lab" 
             collapsed={!isSidebarOpen}
           />
         </nav>
@@ -344,9 +365,58 @@ export default function App() {
                   <QuizComponent quiz={selectedQuiz} onClose={() => setSelectedQuiz(null)} />
                 ) : (
                   <div className="space-y-8 md:space-y-12">
-                     <div className="border-b border-[#222327] pb-8 md:pb-10">
-                        <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter">LABO QUIZ</h2>
-                        <p className="text-gray-500 font-mono mt-3 uppercase text-[10px] md:text-xs tracking-[0.3em]">Validation des acquis</p>
+                     <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-[#222327] pb-8 md:pb-10">
+                        <div>
+                           <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter">LABO QUIZ</h2>
+                           <p className="text-gray-500 font-mono mt-3 uppercase text-[10px] md:text-xs tracking-[0.3em]">Validation des acquis</p>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-4">
+                           <div className="flex items-center gap-2 bg-[#111215] border border-white/5 p-1 rounded-xl">
+                              {['Tous', 'Débutant', 'Avancé'].map((level) => (
+                                <button
+                                  key={level}
+                                  onClick={() => setQuizFilter(level as any)}
+                                  className={cn(
+                                    "px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all",
+                                    quizFilter === level 
+                                      ? "bg-emerald-500 text-black" 
+                                      : "text-gray-500 hover:text-white"
+                                  )}
+                                >
+                                  {level}
+                                </button>
+                              ))}
+                           </div>
+                           <div className="flex items-center gap-2 bg-[#111215] border border-white/5 p-1 rounded-xl">
+                              <button
+                                onClick={() => setQuizSort('default')}
+                                className={cn(
+                                  "px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all",
+                                  quizSort === 'default' ? "bg-white text-black" : "text-gray-500 hover:text-white"
+                                )}
+                              >
+                                Défaut
+                              </button>
+                              <button
+                                onClick={() => setQuizSort('title')}
+                                className={cn(
+                                  "px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all",
+                                  quizSort === 'title' ? "bg-white text-black" : "text-gray-500 hover:text-white"
+                                )}
+                              >
+                                Titre
+                              </button>
+                               <button
+                                onClick={() => setQuizSort('level')}
+                                className={cn(
+                                  "px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all",
+                                  quizSort === 'level' ? "bg-white text-black" : "text-gray-500 hover:text-white"
+                                )}
+                              >
+                                Niveau
+                              </button>
+                           </div>
+                        </div>
                      </div>
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
                         {filteredQuizzes.map((quiz) => (
@@ -408,6 +478,16 @@ export default function App() {
                      <BookCard key={book.id} book={book} />
                    ))}
                 </div>
+              </motion.div>
+            )}
+
+            {activeView === 'support' && (
+              <motion.div 
+                key="support"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                <SupportForm />
               </motion.div>
             )}
           </AnimatePresence>
