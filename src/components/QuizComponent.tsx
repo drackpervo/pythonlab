@@ -27,19 +27,32 @@ export const QuizComponent: React.FC<QuizComponentProps> = ({ quiz, onClose }) =
   const [showResults, setShowResults] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingQuestion, setIsLoadingQuestion] = useState(true);
+  const [displayedQuestion, setDisplayedQuestion] = useState<Question | null>(null);
 
-  const currentQuestion = quiz.questions[currentQuestionIndex];
+  // Lazy loading effect for questions
+  React.useEffect(() => {
+    const loadQuestion = async () => {
+      setIsLoadingQuestion(true);
+      // Simulate an async fetch for the question to prevent UI blocking
+      // even if the data set is large.
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setDisplayedQuestion(quiz.questions[currentQuestionIndex]);
+      setIsLoadingQuestion(false);
+    };
+    loadQuestion();
+  }, [currentQuestionIndex, quiz.questions]);
 
   const handleOptionSelect = (index: number) => {
-    if (isAnswered) return;
+    if (isAnswered || isLoadingQuestion) return;
     setSelectedOption(index);
   };
 
   const handleConfirm = () => {
-    if (selectedOption === null) return;
+    if (selectedOption === null || !displayedQuestion) return;
     
     try {
-      const correct = selectedOption === currentQuestion.correctAnswer;
+      const correct = selectedOption === displayedQuestion.correctAnswer;
       if (correct) {
         setScore(prev => prev + 1);
       }
@@ -52,6 +65,8 @@ export const QuizComponent: React.FC<QuizComponentProps> = ({ quiz, onClose }) =
   };
 
   const handleNext = async () => {
+    if (!displayedQuestion) return;
+    
     try {
       if (currentQuestionIndex < quiz.questions.length - 1) {
         setCurrentQuestionIndex(prev => prev + 1);
@@ -69,7 +84,7 @@ export const QuizComponent: React.FC<QuizComponentProps> = ({ quiz, onClose }) =
         });
 
         setShowResults(true);
-        if (score + (selectedOption === currentQuestion.correctAnswer ? 1 : 0) === quiz.questions.length) {
+        if (score + (selectedOption === displayedQuestion.correctAnswer ? 1 : 0) === quiz.questions.length) {
           confetti({
             particleCount: 150,
             spread: 70,
@@ -94,10 +109,31 @@ export const QuizComponent: React.FC<QuizComponentProps> = ({ quiz, onClose }) =
       setScore(0);
       setShowResults(false);
       setError(null);
+      setDisplayedQuestion(null);
     } catch (err) {
       setError("Impossible de relancer le quiz.");
     }
   };
+
+  const QuestionSkeleton = () => (
+    <div className="animate-pulse space-y-8">
+      {/* Question Header Skeleton */}
+      <div className="h-8 bg-gray-800 rounded-xl w-3/4" />
+      
+      {/* Options Skeleton */}
+      <div className="space-y-4">
+        {[1, 2, 3, 4].map(i => (
+          <div key={i} className="h-16 bg-gray-800/50 rounded-2xl border border-gray-800/50" />
+        ))}
+      </div>
+      
+      {/* Footer Skeleton */}
+      <div className="flex justify-between items-center pt-4">
+        <div className="h-12 bg-gray-800 rounded-xl w-48" />
+        <div className="h-12 bg-gray-800 rounded-xl w-32" />
+      </div>
+    </div>
+  );
 
   return (
     <div className="max-w-3xl mx-auto w-full px-2 sm:px-0">
@@ -153,120 +189,141 @@ export const QuizComponent: React.FC<QuizComponentProps> = ({ quiz, onClose }) =
                />
             </div>
 
-            {/* Question */}
-            <h4 className="text-xl md:text-2xl font-bold text-white mb-6 md:mb-8 leading-tight">
-              {currentQuestion.text}
-            </h4>
+            <AnimatePresence mode="wait">
+              {isLoadingQuestion || !displayedQuestion ? (
+                <motion.div
+                  key="skeleton"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <QuestionSkeleton />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key={displayedQuestion.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {/* Question */}
+                  <h4 className="text-xl md:text-2xl font-bold text-white mb-6 md:mb-8 leading-tight">
+                    {displayedQuestion.text}
+                  </h4>
 
-            {/* Options */}
-            <div className="space-y-3 md:space-y-4 mb-8 md:mb-10">
-              {currentQuestion.options.map((option, idx) => {
-                const isSelected = selectedOption === idx;
-                const isCorrect = currentQuestion.correctAnswer === idx;
-                
-                let borderColor = "border-[#2A2B2F]";
-                let bgColor = "bg-white/5";
-                let textColor = "text-gray-300";
+                  {/* Options */}
+                  <div className="space-y-3 md:space-y-4 mb-8 md:mb-10">
+                    {displayedQuestion.options.map((option, idx) => {
+                      const isSelected = selectedOption === idx;
+                      const isCorrect = displayedQuestion.correctAnswer === idx;
+                      
+                      let borderColor = "border-[#2A2B2F]";
+                      let bgColor = "bg-white/5";
+                      let textColor = "text-gray-300";
 
-                if (isAnswered) {
-                  if (isCorrect) {
-                     borderColor = "border-emerald-500";
-                     bgColor = "bg-emerald-500/10";
-                     textColor = "text-emerald-400";
-                  } else if (isSelected) {
-                     borderColor = "border-rose-500";
-                     bgColor = "bg-rose-500/10";
-                     textColor = "text-rose-400";
-                  }
-                } else if (isSelected) {
-                  borderColor = "border-white/40";
-                  bgColor = "bg-white/10";
-                  textColor = "text-white";
-                }
+                      if (isAnswered) {
+                        if (isCorrect) {
+                          borderColor = "border-emerald-500";
+                          bgColor = "bg-emerald-500/10";
+                          textColor = "text-emerald-400";
+                        } else if (isSelected) {
+                          borderColor = "border-rose-500";
+                          bgColor = "bg-rose-500/10";
+                          textColor = "text-rose-400";
+                        }
+                      } else if (isSelected) {
+                        borderColor = "border-white/40";
+                        bgColor = "bg-white/10";
+                        textColor = "text-white";
+                      }
 
-                return (
-                  <button
-                    key={idx}
-                    onClick={() => handleOptionSelect(idx)}
-                    disabled={isAnswered}
-                    className={cn(
-                      "w-full p-4 md:p-5 rounded-2xl border text-left transition-all relative group",
-                      borderColor, bgColor, textColor,
-                      !isAnswered && "hover:border-white/20 active:scale-[0.99]",
-                      isAnswered && !isCorrect && !isSelected && "opacity-40"
-                    )}
-                  >
-                    <div className="flex items-center gap-3 md:gap-4">
-                       <span className={cn(
-                         "w-7 h-7 md:w-8 md:h-8 rounded-lg flex items-center justify-center text-xs md:text-sm font-bold font-mono border flex-shrink-0",
-                         isSelected ? "bg-white text-black border-white" : "border-gray-800 text-gray-500"
-                       )}>
-                          {String.fromCharCode(65 + idx)}
-                       </span>
-                       <span className="text-base md:text-lg font-medium">{option}</span>
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => handleOptionSelect(idx)}
+                          disabled={isAnswered}
+                          className={cn(
+                            "w-full p-4 md:p-5 rounded-2xl border text-left transition-all relative group",
+                            borderColor, bgColor, textColor,
+                            !isAnswered && "hover:border-white/20 active:scale-[0.99]",
+                            isAnswered && !isCorrect && !isSelected && "opacity-40"
+                          )}
+                        >
+                          <div className="flex items-center gap-3 md:gap-4">
+                            <span className={cn(
+                              "w-7 h-7 md:w-8 md:h-8 rounded-lg flex items-center justify-center text-xs md:text-sm font-bold font-mono border flex-shrink-0",
+                              isSelected ? "bg-white text-black border-white" : "border-gray-800 text-gray-500"
+                            )}>
+                                {String.fromCharCode(65 + idx)}
+                            </span>
+                            <span className="text-base md:text-lg font-medium">{option}</span>
+                          </div>
+                          {isAnswered && isCorrect && (
+                            <CheckCircle2 className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 text-emerald-500" size={20} />
+                          )}
+                          {isAnswered && isSelected && !isCorrect && (
+                            <XCircle className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 text-rose-500" size={20} />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Feedback & Actions */}
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+                    <div className="flex-1 w-full sm:w-auto">
+                      <AnimatePresence>
+                        {isAnswered && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="text-xs md:text-sm text-gray-400 font-medium bg-white/5 p-4 rounded-xl border border-white/5"
+                          >
+                            <span className="text-gray-200 block mb-1 font-bold">Le Saviez-vous ?</span>
+                            {displayedQuestion.explanation}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
-                    {isAnswered && isCorrect && (
-                      <CheckCircle2 className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 text-emerald-500" size={20} />
-                    )}
-                    {isAnswered && isSelected && !isCorrect && (
-                      <XCircle className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 text-rose-500" size={20} />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Feedback & Actions */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-              <div className="flex-1 w-full sm:w-auto">
-                <AnimatePresence>
-                  {isAnswered && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-xs md:text-sm text-gray-400 font-medium bg-white/5 p-4 rounded-xl border border-white/5"
-                    >
-                      <span className="text-gray-200 block mb-1 font-bold">Le Saviez-vous ?</span>
-                      {currentQuestion.explanation}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-              <div className="flex-shrink-0 w-full sm:w-auto">
-                {!isAnswered ? (
-                  <button
-                    onClick={handleConfirm}
-                    disabled={selectedOption === null}
-                    className={cn(
-                      "w-full sm:w-auto px-10 py-3.5 rounded-xl font-bold transition-all active:scale-95",
-                      selectedOption === null 
-                        ? "bg-gray-800 text-gray-500 cursor-not-allowed" 
-                        : "bg-white text-black hover:bg-gray-200 shadow-xl shadow-white/10"
-                    )}
-                  >
-                    Vérifier
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleNext}
-                    disabled={isSubmitting}
-                    className={cn(
-                      "w-full sm:w-auto px-10 py-3.5 bg-emerald-500 text-black rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-emerald-400 transition-all active:scale-95 shadow-xl shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-wait",
-                      isSubmitting && "animate-pulse"
-                    )}
-                  >
-                    {isSubmitting ? (
-                      "Traitement..."
-                    ) : (
-                      <>
-                        {currentQuestionIndex === quiz.questions.length - 1 ? "Résultats" : "Suivant"}
-                        <ChevronRight size={18} />
-                      </>
-                    )}
-                  </button>
-                )}
-              </div>
-            </div>
+                    <div className="flex-shrink-0 w-full sm:w-auto">
+                      {!isAnswered ? (
+                        <button
+                          onClick={handleConfirm}
+                          disabled={selectedOption === null}
+                          className={cn(
+                            "w-full sm:w-auto px-10 py-3.5 rounded-xl font-bold transition-all active:scale-95",
+                            selectedOption === null 
+                              ? "bg-gray-800 text-gray-500 cursor-not-allowed" 
+                              : "bg-white text-black hover:bg-gray-200 shadow-xl shadow-white/10"
+                          )}
+                        >
+                          Vérifier
+                        </button>
+                      ) : (
+                        <button
+                          onClick={handleNext}
+                          disabled={isSubmitting}
+                          className={cn(
+                            "w-full sm:w-auto px-10 py-3.5 bg-emerald-500 text-black rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-emerald-400 transition-all active:scale-95 shadow-xl shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-wait",
+                            isSubmitting && "animate-pulse"
+                          )}
+                        >
+                          {isSubmitting ? (
+                            "Traitement..."
+                          ) : (
+                            <>
+                              {currentQuestionIndex === quiz.questions.length - 1 ? "Résultats" : "Suivant"}
+                              <ChevronRight size={18} />
+                            </>
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         ) : (
           <motion.div
