@@ -29,29 +29,39 @@ export function SupportForm() {
     setIsSubmitting(true);
     setError(null);
     
-    try {
-      const response = await fetch('/api/send-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, message }),
-      });
+  try {
+    const response = await fetch('/api/send-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name, message }),
+    });
 
-      const data = await response.json();
+    let data;
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.indexOf("application/json") !== -1) {
+      data = await response.json();
+    } else {
+      const text = await response.text();
+      console.error("Non-JSON response:", text);
+      throw new Error("Le serveur a renvoyé une réponse invalide (HTML). Vérifiez votre configuration Vercel ou les secrets.");
+    }
 
-      if (!response.ok) {
-        throw new Error(data.error || "Erreur lors de l'envoi");
-      }
-      
-      setSubmitted(true);
+    if (!response.ok) {
+      throw new Error(data?.error || "Erreur lors de l'envoi");
+    }
+    
+    setSubmitted(true);
+    if (typeof confetti === 'function') {
       confetti({
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 },
         colors: ['#10b981', '#ffffff', '#34d399']
       });
-    } catch (err) {
+    }
+  } catch (err) {
       console.error("Submission Error:", err);
       setError(err instanceof Error ? err.message : "Une erreur est survenue lors de l'envoi.");
     } finally {
