@@ -21,6 +21,7 @@ interface QuizComponentProps {
 
 export const QuizComponent: React.FC<QuizComponentProps> = ({ quiz, onClose }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [userAnswers, setUserAnswers] = useState<Record<number, { selectedOption: number; isAnswered: boolean; isCorrect: boolean }>>({});
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
@@ -34,6 +35,16 @@ export const QuizComponent: React.FC<QuizComponentProps> = ({ quiz, onClose }) =
   React.useEffect(() => {
     const loadQuestion = async () => {
       setIsLoadingQuestion(true);
+      // Restore states when switching questions via breadcrumb
+      const existingAnswer = userAnswers[currentQuestionIndex];
+      if (existingAnswer) {
+        setSelectedOption(existingAnswer.selectedOption);
+        setIsAnswered(existingAnswer.isAnswered);
+      } else {
+        setSelectedOption(null);
+        setIsAnswered(false);
+      }
+      
       // Simulate an async fetch for the question to prevent UI blocking
       // even if the data set is large.
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -52,11 +63,19 @@ export const QuizComponent: React.FC<QuizComponentProps> = ({ quiz, onClose }) =
     if (selectedOption === null || !displayedQuestion) return;
     
     try {
-      const correct = selectedOption === displayedQuestion.correctAnswer;
-      if (correct) {
+      const isCorrect = selectedOption === displayedQuestion.correctAnswer;
+      if (isCorrect) {
         setScore(prev => prev + 1);
       }
       setIsAnswered(true);
+      setUserAnswers(prev => ({
+        ...prev,
+        [currentQuestionIndex]: {
+          selectedOption,
+          isAnswered: true,
+          isCorrect
+        }
+      }));
       setError(null);
     } catch (err) {
       console.error('Error confirming answer:', err);
@@ -69,9 +88,18 @@ export const QuizComponent: React.FC<QuizComponentProps> = ({ quiz, onClose }) =
     
     try {
       if (currentQuestionIndex < quiz.questions.length - 1) {
-        setCurrentQuestionIndex(prev => prev + 1);
-        setSelectedOption(null);
-        setIsAnswered(false);
+        const nextIndex = currentQuestionIndex + 1;
+        setCurrentQuestionIndex(nextIndex);
+        
+        // Restore state for the next question if it was already answered
+        const nextAnswer = userAnswers[nextIndex];
+        if (nextAnswer) {
+          setSelectedOption(nextAnswer.selectedOption);
+          setIsAnswered(nextAnswer.isAnswered);
+        } else {
+          setSelectedOption(null);
+          setIsAnswered(false);
+        }
       } else {
         setIsSubmitting(true);
         // Simulation d'une soumission à un serveur
@@ -107,6 +135,7 @@ export const QuizComponent: React.FC<QuizComponentProps> = ({ quiz, onClose }) =
       setSelectedOption(null);
       setIsAnswered(false);
       setScore(0);
+      setUserAnswers({});
       setShowResults(false);
       setError(null);
       setDisplayedQuestion(null);
@@ -132,6 +161,38 @@ export const QuizComponent: React.FC<QuizComponentProps> = ({ quiz, onClose }) =
         <div className="h-12 bg-gray-800 rounded-xl w-48" />
         <div className="h-12 bg-gray-800 rounded-xl w-32" />
       </div>
+    </div>
+  );
+
+  const Breadcrumb = () => (
+    <div className="flex flex-wrap gap-2 mb-8 justify-center">
+      {quiz.questions.map((_, idx) => {
+        const answer = userAnswers[idx];
+        const isCurrent = currentQuestionIndex === idx;
+        const isAnswered = !!answer;
+        const isCorrect = answer?.isCorrect;
+
+        return (
+          <button
+            key={idx}
+            onClick={() => {
+              if (!isLoadingQuestion) setCurrentQuestionIndex(idx);
+            }}
+            className={cn(
+              "w-8 h-8 rounded-full text-xs font-bold transition-all flex items-center justify-center border-2",
+              isCurrent 
+                ? "border-emerald-500 bg-emerald-500 text-black scale-110 shadow-lg shadow-emerald-500/20" 
+                : isAnswered 
+                  ? isCorrect 
+                    ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-500" 
+                    : "border-rose-500/50 bg-rose-500/10 text-rose-500"
+                  : "border-gray-800 bg-gray-800/50 text-gray-500 hover:border-gray-600"
+            )}
+          >
+            {idx + 1}
+          </button>
+        );
+      })}
     </div>
   );
 
@@ -181,13 +242,16 @@ export const QuizComponent: React.FC<QuizComponentProps> = ({ quiz, onClose }) =
             </div>
 
             {/* Progress Bar */}
-            <div className="h-1.5 w-full bg-gray-800 rounded-full mb-8 md:mb-10 overflow-hidden">
+            <div className="h-1.5 w-full bg-gray-800 rounded-full mb-6 overflow-hidden">
                <motion.div 
                  className="h-full bg-emerald-500"
                  initial={{ width: 0 }}
-                 animate={{ width: `${((currentQuestionIndex + 1) / quiz.questions.length) * 100}%` }}
+                 animate={{ width: `${((Object.keys(userAnswers).length) / quiz.questions.length) * 100}%` }}
                />
             </div>
+
+            {/* Breadcrumb */}
+            <Breadcrumb />
 
             <AnimatePresence mode="wait">
               {isLoadingQuestion || !displayedQuestion ? (

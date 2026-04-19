@@ -483,6 +483,14 @@ export const BOOKS: Book[] = [
     coverUrl: "https://images-na.ssl-images-amazon.com/images/I/81zD+Z0jWpL._AC_UL600_SR600,600_.jpg",
     description: "Une excellente introduction à l'informatique à travers le langage Python.",
     link: "https://greenteapress.com/wp/think-python-2e/"
+  },
+  {
+    id: 'un-zeste-de-python',
+    title: "Un zeste de Python",
+    author: "Zeste de Savoir",
+    coverUrl: "https://picsum.photos/seed/python/600/800",
+    description: "Un tutoriel complet et progressif pour apprendre Python 3, de l'installation aux concepts avancés.",
+    link: "https://zestedesavoir.com/tutoriels/2514/un-zeste-de-python/"
   }
 ];
 

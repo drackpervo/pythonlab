@@ -29,9 +29,10 @@ import { Tutorial, Book, Quiz, PlaygroundExample } from './types';
 import { QuizComponent } from './components/QuizComponent';
 import { CodeLab } from './components/CodeLab';
 import { SupportForm } from './components/SupportForm';
+import { NotFound } from './components/NotFound';
 import { cn } from './lib/utils';
 
-type View = 'dashboard' | 'tutorials' | 'books' | 'quizzes' | 'codelab' | 'support';
+type View = 'dashboard' | 'tutorials' | 'books' | 'quizzes' | 'codelab' | 'support' | '404';
 
 export default function App() {
   const [activeView, setActiveView] = useState<View>('dashboard');
@@ -42,6 +43,17 @@ export default function App() {
   const [quizSort, setQuizSort] = useState<'default' | 'title' | 'level'>('default');
   const [quizFilter, setQuizFilter] = useState<'Tous' | 'Débutant' | 'Intermédiaire' | 'Avancé'>('Tous');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Simple routing logic to handle "404" or unknown paths
+  useState(() => {
+    const path = window.location.pathname.replace(/^\/|\/$/g, '');
+    const validPaths = ['tutorials', 'books', 'quizzes', 'codelab', 'support', ''];
+    if (path && !validPaths.includes(path)) {
+      setActiveView('404');
+    } else if (path) {
+      setActiveView(path as View);
+    }
+  });
 
   const handleTutorialComplete = () => {
     confetti({
@@ -488,6 +500,16 @@ export default function App() {
                 animate={{ opacity: 1 }}
               >
                 <SupportForm />
+              </motion.div>
+            )}
+
+            {activeView === '404' && (
+              <motion.div 
+                key="404"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                <NotFound onGoHome={() => setActiveView('dashboard')} />
               </motion.div>
             )}
           </AnimatePresence>
